@@ -4,16 +4,14 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data;
 
-
-namespace WaterTree
+namespace WaterTree.Admin
 {
-    public partial class About : Page
+    public partial class Register : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            //DataTable dt=
+
         }
     }
 }

@@ -19,9 +19,11 @@
     <link href="../Content/layui.css" rel="stylesheet" />
     <base target="_blank"/>
     <style>
-        /*#form1 > div.wrapper.wrapper-content > div:nth-child(2),#form1 > div.wrapper.wrapper-content > div:nth-child(2) > div > div > div.ibox-content{
-            height:349px;
-        }*/
+        .OtherContrastList{
+            margin-left:20px;
+            width:100px;
+            height:30px;
+        }
     </style>
 </head>
 <body  class="gray-bg">
@@ -89,49 +91,17 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>活动情况</h5>
+                        <h5 style="margin-top:10px;">活动情况</h5> 
+                        <asp:Button ID="OtherContrast" runat="server" Text="其他统计图" OnClick="OtherContrast_Click" />
+
                     </div>
                     <div class="ibox-content">
                         <div class="row">
                             <div class="col-sm-9">
-                                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
-                                      <ul class="layui-tab-title">
-                                        <li class="layui-this">当月植树量和活动量对比</li>
-                                        <li>党支部对比</li>
-                                        <li>镇街对比</li>
-                                        <li>树类对比</li>
-                                        <li>年对比</li>
-                                        <li>指定年的月份对比</li>
-                                      </ul>
-                                      <div class="layui-tab-content">
-                                        <div class="layui-tab-item layui-show">
-                                             
                                             <div class="flot-chart">
                                                 <div class="flot-chart-content" id="myChart"></div>
                                             </div>
-                                        </div>
-                                        <div class="layui-tab-item" >党支部对比</div>
-                                        <div class="layui-tab-item">镇街对比</div>
-                                        <div class="layui-tab-item">树类对比</div>
-                                        <div class="layui-tab-item">
-                                            <div class="flot-chart">
-                                                <div class="flot-chart-content" id="myChart5"></div>
-                                            </div>
-                                        </div>
-                                        <div class="layui-tab-item">
-                                            <asp:DropDownList ID="YearList" runat="server"  CssClass="Search">
-                                                 <asp:ListItem  Text="2019" Selected="True"></asp:ListItem>
-                                                 <asp:ListItem  Text="2018"></asp:ListItem>
-                                                 <asp:ListItem  Text="2017"></asp:ListItem>
-                                             </asp:DropDownList>
-                                            <div class="flot-chart">
-                                                 <div class="flot-chart-content" id="myChart6"></div>
-                                            </div>
-                                        </div>
-                                      </div>
-                                    </div>
                             </div> 
-                                
                             <div class="col-sm-3">
                                 <ul class="stat-list">
                                     <li>
@@ -253,7 +223,7 @@
                                             <td><small><%#Eval("treename") %></small>
                                             </td>
                                             <td><i class="fa fa-clock-o"></i><%#Eval("begindate","{0:yyyy-MM-dd}") %></td>
-                                            <td><%#Eval("DepartName") %></td>
+                                            <td><%#Eval("DeptName") %></td>
                                             <td class="text-navy"> <i class="fa fa-level-up"></i><%#Eval("num") %> </td>
                                         </tr>
                                    </ItemTemplate>
@@ -332,34 +302,6 @@
     <script src="../Scripts/echarts.min.js"></script>
     <script src="../Scripts/macarons.js"></script>
     <script src="../Scripts/layui/layui.js"></script>
-<%--layUI选项卡--%>
-<script>
-   
-
-
-layui.use('element', function(){
-  var $ = layui.jquery
-  ,element = layui.element; //Tab的切换功能，切换事件监听等，需要依赖element模块
-  
-  //触发事件
-  var active = {
-    tabAdd: function(){
-      //新增一个Tab项
-      element.tabAdd('demo', {
-        title: '新选项'+ (Math.random()*1000|0) //用于演示
-        ,content: '内容'+ (Math.random()*1000|0)
-        ,id: new Date().getTime() //实际使用一般是规定好的id，这里以时间戳模拟下
-      })
-    }
-  };
-  
-  $('.site-demo-active').on('click', function(){
-    var othis = $(this), type = othis.data('type');
-    active[type] ? active[type].call(this, othis) : '';
-  });
-  
-});
-</script>
 <%--点赞列表格式--%>
  <script>
             for(var i=1;i<6;i++){
@@ -370,14 +312,26 @@ layui.use('element', function(){
                 $("#form1 > div.wrapper.wrapper-content > div:nth-child(3) > div.col-sm-4 > div > div.ibox-content > div > div > table > tbody > tr:nth-child(" + i + ") > td > div > div.media-body").find("#bgood").html("");
             }
             }
+
+            $('#OtherContrastList').bind('input propertychange', function () {
+                var text = $("#OtherContrastList").find("option:selected").val();
+                if (text=='#') {
+                    return false;
+                }
+                else{
+                     window.open(text)
+                }
+                return false;
+            })
         </script>
+
+
 <%--当月植树量和活动量对比--%>
 <script>
         $(function () {
     Bar();
 });
 
-        
         function Bar() {
             var Time = new Array();
             var TreeNum = new Array();
@@ -389,7 +343,7 @@ layui.use('element', function(){
     $.ajax({
         type: "post",
         async: false,
-url: "/Admin/ChartData.ashx?action=GetTreeAndTaskCountByDayMonth",
+url: "/Admin/GetData.ashx?action=GetTreeAndTaskCountByDayMonth",
         dataType: "json",       
         success:function(data){
         for (var i=0;i<data.length;i++){
@@ -400,12 +354,15 @@ url: "/Admin/ChartData.ashx?action=GetTreeAndTaskCountByDayMonth",
 InitChart(Time, TreeNum, TaskNum);
         },
         error: function(errmsg) {
-            alert("Ajax获取服务器数据出错了！"+ errmsg);
+            alert("获取服务器当月数据出错了！"+ errmsg);
         }
 });
 }
 function InitChart(Time, TreeNum,TaskNum) {
     var myChart = echarts.init(document.getElementById('myChart'));
+    var myCharts = document.getElementById('myChart');
+    myCharts.style.width = '1096px';
+    myCharts.style.height = '400px';
     option = {
         legend:[
             {
@@ -420,9 +377,10 @@ function InitChart(Time, TreeNum,TaskNum) {
         //纵坐标信息
         yAxis: {
             type: 'value',
-            min: 0,
-            max: 30,//最大多少
-            splitNumber: 5,//隔几个分开
+axisLine: { show: true },
+min: 0,
+max: 100,//最大多少
+splitNumber: 5,//隔几个分开
         },
         series: [
               {
@@ -469,396 +427,3 @@ function InitChart(Time, TreeNum,TaskNum) {
 }
 
 </script>
-<%--指定年的月份对比--%>
-<script>
-        var myCharts6 = document.getElementById('myChart6');
-        myCharts6.style.width = '1096px';
-        myCharts6.style.height = '200px';
-        var myChart6 = echarts.init(myCharts6);
-
-        // 指定图表的配置项和数据切换
-       
-        myChart6.on('legendselectchanged', function (params) {
-            var selected = params.selected;
-            var setiesName = params.name;
-            switch (setiesName) {
-                case '总树木数':
-                    if (selected['总树木数']) {
-                        option.legend.data[0].icon = 'image://images/1.jpg';
-                        option.legend.selected['总树木数'] = true;
-                    } else {
-                        option.legend.data[0].icon = 'image://images/3.jpg';
-                        option.legend.selected['总树木数'] = false;
-                    }
-                    break;
-                case '总活动数':
-                    if (selected['总活动数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['总活动数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['总活动数'] = false;
-                    }
-                    break;
-                case '点赞数':
-                    if (selected['点赞数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['点赞数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['点赞数'] = false;
-                    }
-                    break;
-                case '评分人数':
-                    if (selected['评分人数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['评分人数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['评分人数'] = false;
-                    }
-                    break;
-            }
-        })
-    //加载数据和图表
-        var date = new Date;
-        var year = date.getFullYear();
-        SetAllOpintion(year);
-
-    //下拉框改变事件
-        $('#YearList').bind('input propertychange', function () {
-            myChart6.clear();
-            var year = $("#YearList").find("option:selected").text();
-            SetAllOpintion(year);
-            return false;
-        })
-    //交互数据
-        function SetAllOpintion(year) {
-            var Time = new Array();
-            var TreeNum = new Array();
-            var TaskNum = new Array();
-            var GoodNum = new Array();
-            var ScoreNum = new Array();
-            $.ajax({
-                type: "post",
-                async: false,
-                url: "/Admin/ChartData.ashx?action=GetCountByMonthInYear",
-                data: { 'year': year },
-                dataType: "json",
-                success: function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        Time.push(data[i].Time);
-                        TreeNum.push(data[i].TreeNum);
-                        TaskNum.push(data[i].TaskNum);
-                        GoodNum.push(data[i].GoodNum);
-                        ScoreNum.push(data[i].ScoreNum);
-                    }
-                    var option = {
-                        title: {
-                            text: '年对比'
-                        },
-                        //提示框  
-                        tooltip: {
-                            //触发类型：坐标轴触发  
-                            trigger: 'axis',
-                        },
-                        //图例  
-                        legend: {
-                            selected: {
-                                '总树木数': true,
-                                '总活动数': true,
-                                '点赞数': true,
-                                '评分人数': true
-                            },
-                            data: [{
-                                name: '总树木数',
-                                icon: 'image://images/1.jpg',//显示你需要展示的图片  
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'red'
-                                }
-                            },
-                            {
-                                name: '总活动数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'blue'
-                                },
-                            },
-                            {
-                                name: '点赞数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'red'
-                                },
-                            } ,
-                            {
-                                name: '评分人数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'blue'
-                                },
-                            }],
-                            bottom: 5,
-
-                        },
-                        xAxis: {
-                            data: Time
-                        },
-                        //控制y轴线是否显示  
-                        yAxis: {
-                            axisLine: { show: false }
-                        },
-                        series: [{
-                            name: '总树木数',
-                            type: 'line',
-                            data: TreeNum
-                        },
-                        {
-                            name: '总活动数',
-                            type: 'line',
-                            data: TaskNum
-                        },
-                        {
-                            name: '点赞数',
-                            type: 'line',
-                            data: GoodNum
-                        },
-                        {
-                            name: '评分人数',
-                            type: 'line',
-                            data: ScoreNum
-                        }
-                        ]
-
-                    };
-
-                    // 使用刚指定的配置项和数据显示图表  
-                    myChart6.setOption(option, true);
-                    setTimeout(function () {
-                        window.onresize = function () {
-                            myChart6.resize();
-                        }
-                    })
-                },
-                error: function (errmsg) {
-                    alert("Ajax获取服务器数据出错了！" + errmsg);
-                }
-            });
-        }
-        </script>
-
-<%--年对比--%>
-<script>
-        var myCharts5 = document.getElementById('myChart5');
-        myCharts5.style.width = '1096px';
-        myCharts5.style.height = '200px';
-        var myChart5 = echarts.init(myCharts5);
-
-        // 指定图表的配置项和数据切换
-       
-        myChart5.on('legendselectchanged', function (params) {
-            var selected = params.selected;
-            var setiesName = params.name;
-            switch (setiesName) {
-                case '总树木数':
-                    if (selected['总树木数']) {
-                        option.legend.data[0].icon = 'image://images/1.jpg';
-                        option.legend.selected['总树木数'] = true;
-                    } else {
-                        option.legend.data[0].icon = 'image://images/3.jpg';
-                        option.legend.selected['总树木数'] = false;
-                    }
-                    break;
-                case '总活动数':
-                    if (selected['总活动数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['总活动数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['总活动数'] = false;
-                    }
-                    break;
-                case '点赞数':
-                    if (selected['点赞数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['点赞数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['点赞数'] = false;
-                    }
-                    break;
-                case '评分人数':
-                    if (selected['评分人数']) {
-                        option.legend.data[1].icon = 'image://images/2.jpg';
-                        option.legend.selected['评分人数'] = true;
-                    } else {
-                        option.legend.data[1].icon = 'image://images/4.jpg';
-                        option.legend.selected['评分人数'] = false;
-                    }
-                    break;
-            }
-        })
-    //加载数据和图表
-        var date = new Date;
-        var year = date.getFullYear();
-        SetAllOpintion();
-
-    //下拉框改变事件
-        $('#YearList').bind('input propertychange', function () {
-            myChart5.clear();
-            var year = $("#YearList").find("option:selected").text();
-            SetAllOpintion(year);
-            return false;
-        })
-    //交互数据
-        function SetAllOpintion() {
-            var Time = new Array();
-            var TreeNum = new Array();
-            var TaskNum = new Array();
-            var GoodNum = new Array();
-            var ScoreNum = new Array();
-            $.ajax({
-                type: "post",
-                async: false,
-                url: "/Admin/ChartData.ashx?action=GetCountByYear",
-                dataType: "json",
-                success: function (data) {
-                    for (var i = 0; i < data.length; i++) {
-                        Time.push(data[i].Time);
-                        TreeNum.push(data[i].TreeNum);
-                        TaskNum.push(data[i].TaskNum);
-                        GoodNum.push(data[i].GoodNum);
-                        ScoreNum.push(data[i].ScoreNum);
-                    }
-                    var option = {
-                        title: {
-                            text: '年对比'
-                        },
-                        //提示框  
-                        tooltip: {
-                            //触发类型：坐标轴触发  
-                            trigger: 'axis',
-                        },
-                        //图例  
-                        legend: {
-                            selected: {
-                                '总树木数': true,
-                                '总活动数': true,
-                                '点赞数': true,
-                                '评分人数': true
-                            },
-                            data: [{
-                                name: '总树木数',
-                                icon: 'image://images/1.jpg',//显示你需要展示的图片  
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'red'
-                                }
-                            },
-                            {
-                                name: '总活动数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'blue'
-                                },
-                            },
-                            {
-                                name: '点赞数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'red'
-                                },
-                            } ,
-                            {
-                                name: '评分人数',
-                                icon: 'image://images/2.jpg',
-                                textStyle: {
-                                    fontSize: 12,
-                                    fontWeight: 'bolder',
-                                    color: 'blue'
-                                },
-                            }],
-                            bottom: 5,
-
-                        },
-                        xAxis: {
-                            data: Time
-                        },
-                        //控制y轴线是否显示  
-                        yAxis: {
-                            axisLine: { show: false }
-                        },
-                        series: [{
-                            name: '总树木数',
-                            type: 'line',
-                            data: TreeNum
-                        },
-                        {
-                            name: '总活动数',
-                            type: 'line',
-                            data: TaskNum
-                        },
-                        {
-                            name: '点赞数',
-                            type: 'line',
-                            data: GoodNum
-                        },
-                        {
-                            name: '评分人数',
-                            type: 'line',
-                            data: ScoreNum
-                        }
-                        ]
-
-                    };
-
-                    // 使用刚指定的配置项和数据显示图表  
-                    myChart5.setOption(option, true);
-                    setTimeout(function () {
-                        window.onresize = function () {
-                            myChart5.resize();
-                        }
-                    })
-                },
-                error: function (errmsg) {
-                    alert("Ajax获取服务器数据出错了！" + errmsg);
-                }
-            });
-        }
-        </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

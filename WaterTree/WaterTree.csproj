@@ -155,7 +155,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="About.aspx" />
     <Content Include="Account\AddPhoneNumber.aspx" />
     <Content Include="Account\Confirm.aspx" />
     <Content Include="Account\Forgot.aspx" />
@@ -173,11 +172,16 @@
     <Content Include="Account\VerifyPhoneNumber.aspx" />
     <Content Include="Admin\HomePage.aspx" />
     <Content Include="Admin\index.htm" />
+    <Content Include="Admin\OtherContrast.aspx" />
+    <Content Include="Admin\Register.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\ElementUI\element-ui.css" />
     <Content Include="Content\layui.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="css\mui.min.css" />
+    <Content Include="css\style.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -190,20 +194,91 @@
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Admin\ChartData.ashx" />
+    <Content Include="Admin\GetData.ashx" />
+    <Content Include="fonts\iconfont.eot" />
+    <Content Include="fonts\iconfont.ttf" />
+    <Content Include="fonts\iconfont.woff" />
+    <Content Include="fonts\iconfont.woff2" />
+    <Content Include="fonts\mui.ttf" />
+    <Content Include="Content\ElementUI\fonts\element-icons.woff" />
+    <Content Include="Content\ElementUI\fonts\element-icons.ttf" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="fonts\iconfont.css" />
+    <Content Include="fonts\iconfont.js" />
+    <Content Include="fonts\iconfont.svg" />
+    <Content Include="img\add.png" />
+    <Content Include="img\cat.jpg" />
+    <Content Include="img\cat2.png" />
+    <Content Include="img\feed.png" />
+    <Content Include="img\feed1.png" />
+    <Content Include="img\loadding.gif" />
+    <Content Include="img\loading.gif" />
+    <Content Include="img\log1.png" />
+    <Content Include="img\log2.png" />
+    <Content Include="img\log3.png" />
+    <Content Include="img\log4.png" />
+    <Content Include="img\logbg.png" />
+    <Content Include="img\logbg2.jpg" />
+    <Content Include="img\logo.png" />
+    <Content Include="img\mes1.png" />
+    <Content Include="img\mes2.png" />
+    <Content Include="img\my1.png" />
+    <Content Include="img\my2.png" />
+    <Content Include="img\my3.png" />
+    <Content Include="img\my4.png" />
+    <Content Include="img\my5.png" />
+    <Content Include="img\my6.png" />
+    <Content Include="img\pic.png" />
+    <Content Include="img\pic1.png" />
+    <Content Include="img\pm1.png" />
+    <Content Include="img\pm2.png" />
+    <Content Include="img\pm3.png" />
+    <Content Include="img\sao.png" />
+    <Content Include="img\send.png" />
+    <Content Include="img\star.png" />
+    <Content Include="img\sy_bg.png" />
+    <Content Include="img\sy_icon1.png" />
+    <Content Include="img\sy_icon10.png" />
+    <Content Include="img\sy_icon2.png" />
+    <Content Include="img\sy_icon3.png" />
+    <Content Include="img\sy_icon4.png" />
+    <Content Include="img\sy_icon5.png" />
+    <Content Include="img\sy_icon6.png" />
+    <Content Include="img\sy_icon7.png" />
+    <Content Include="img\sy_icon8.png" />
+    <Content Include="img\sy_icon9.png" />
+    <Content Include="img\task-banner.png" />
+    <Content Include="img\tree.png" />
+    <Content Include="img\xiala.png" />
+    <Content Include="img\zan.png" />
+    <Content Include="js\base64.js" />
+    <Content Include="js\common.js" />
+    <Content Include="js\data.js" />
+    <Content Include="js\echarts-all.js" />
+    <Content Include="js\fix.js" />
+    <Content Include="js\jquery-3.3.1.min.js" />
+    <Content Include="js\jquery17.js" />
+    <Content Include="js\md5.js" />
+    <Content Include="js\md5.min.js" />
+    <Content Include="js\mui.min.js" />
+    <Content Include="js\mui.previewimage.js" />
+    <Content Include="js\mui.zoom.js" />
+    <Content Include="js\rem.js" />
+    <Content Include="js\require.js" />
+    <Content Include="js\SelfFunction.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\echarts.js" />
-    <Content Include="Scripts\highcharts.js" />
-    <Content Include="Scripts\highcharts.src.js" />
+    <Content Include="Scripts\ElementUI\element-ui.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <Content Include="Scripts\layui.js" />
+    <Content Include="Scripts\LuTree.js" />
     <Content Include="Scripts\macarons.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\vue.min.js" />
     <Content Include="Scripts\WebForms\DetailsView.js" />
     <Content Include="Scripts\echarts.min.js" />
     <Content Include="Scripts\WebForms\Focus.js" />
@@ -353,8 +428,8 @@
     <Compile Include="Account\VerifyPhoneNumber.aspx.designer.cs">
       <DependentUpon>VerifyPhoneNumber.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\ChartData.ashx.cs">
-      <DependentUpon>ChartData.ashx</DependentUpon>
+    <Compile Include="Admin\GetData.ashx.cs">
+      <DependentUpon>GetData.ashx</DependentUpon>
     </Compile>
     <Compile Include="Admin\HomePage.aspx.cs">
       <DependentUpon>HomePage.aspx</DependentUpon>
@@ -363,14 +438,21 @@
     <Compile Include="Admin\HomePage.aspx.designer.cs">
       <DependentUpon>HomePage.aspx</DependentUpon>
     </Compile>
-    <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="About.aspx.cs">
-      <DependentUpon>About.aspx</DependentUpon>
+    <Compile Include="Admin\OtherContrast.aspx.cs">
+      <DependentUpon>OtherContrast.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="About.aspx.designer.cs">
-      <DependentUpon>About.aspx</DependentUpon>
+    <Compile Include="Admin\OtherContrast.aspx.designer.cs">
+      <DependentUpon>OtherContrast.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\Register.aspx.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Register.aspx.designer.cs">
+      <DependentUpon>Register.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
@@ -417,12 +499,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Admin\source\" />
     <Folder Include="App_Data\" />
-    <Folder Include="css\" />
     <Folder Include="images\" />
     <Folder Include="imgusers\" />
-    <Folder Include="img\" />
-    <Folder Include="js\" />
     <Folder Include="plugins\" />
     <Folder Include="Scripts\layui\" />
   </ItemGroup>

@@ -25,16 +25,6 @@ namespace WaterTree.Admin
             GetGOODList();//点赞排行榜
         }
 
-        //protected void YearList()
-        //{
-        //    SqlDataReader read = DbHelperSQL.ExecuteReader("select ");
-        //    while (read.Read())
-        //    {
-        //        string RID = read["RID"].ToString();
-        //        string Title = read["Title"].ToString();
-        //        SuperviseList.Items.Add(new ListItem(Title, RID));
-        //    }
-        //}
         //植树数
         protected void GetTreeCount()
         {
@@ -173,7 +163,7 @@ namespace WaterTree.Admin
             {
                 AllConcert = double.Parse( dt2.Tables[0].Rows[0]["num"].ToString());
             }
-            ConcernsPercent.InnerText = ((AllConcert - LastConcert) / AllConcert).ToString("0%");
+            ConcernsPercent.InnerText = (LastConcert / AllConcert).ToString("0%");
         }
         //最近一个月活跃用户
         protected void GetActiveUserCount()
@@ -207,7 +197,7 @@ namespace WaterTree.Admin
             {
                 NowMonth = double.Parse( dt2.Tables[0].Rows[0]["num"].ToString());
             }
-            ActivePercent.InnerText = ((NowMonth - LeastMonth) / NowMonth).ToString("0%");
+            ActivePercent.InnerText = ((NowMonth - LeastMonth) / LeastMonth).ToString("0%");
             Month.InnerText= DateTime.Now.ToString("MM")+"月";
         }
 
@@ -216,7 +206,7 @@ namespace WaterTree.Admin
         {
             SqlDataAdapter sda = new SqlDataAdapter();
             DataSet ds = new DataSet();
-            ds = DbHelperSQL.Query("select top 6 treename,DepartName,begindate,COUNT(*) as num from vwNewTreeList group by treename,DepartName,begindate order by begindate desc");
+            ds = DbHelperSQL.Query("select top 6 treename,DeptName,begindate,COUNT(*) as num from vwNewTreeList group by treename,DeptName,begindate order by begindate desc");
             DataView dv = ds.Tables[0].DefaultView;
             NewTreeList.DataSource = dv;
             NewTreeList.DataBind();
@@ -241,6 +231,11 @@ namespace WaterTree.Admin
             DataView dv = ds.Tables[0].DefaultView;
             TaskmxCommentList.DataSource = dv;
             TaskmxCommentList.DataBind();
+        }
+
+        protected void OtherContrast_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("OtherContrast.aspx");
         }
     }
 }

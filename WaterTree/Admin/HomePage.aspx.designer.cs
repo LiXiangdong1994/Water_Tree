@@ -103,13 +103,13 @@ namespace WaterTree.Admin {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Month;
         
         /// <summary>
-        /// YearList 控件。
+        /// OtherContrast 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList YearList;
+        protected global::System.Web.UI.WebControls.Button OtherContrast;
         
         /// <summary>
         /// TreeToal 控件。
