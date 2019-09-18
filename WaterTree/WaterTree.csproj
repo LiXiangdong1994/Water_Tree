@@ -170,8 +170,17 @@
     <Content Include="Account\ResetPasswordConfirmation.aspx" />
     <Content Include="Account\TwoFactorAuthenticationSignIn.aspx" />
     <Content Include="Account\VerifyPhoneNumber.aspx" />
+    <Content Include="Admin\about.aspx" />
+    <Content Include="Admin\feedbackAdd.aspx" />
+    <Content Include="Admin\feedbackDetail.aspx" />
+    <Content Include="Admin\feedbackList.aspx" />
+    <Content Include="Admin\helpDetail.aspx" />
+    <Content Include="Admin\helpList.aspx" />
     <Content Include="Admin\HomePage.aspx" />
-    <Content Include="Admin\index.htm" />
+    <Content Include="Admin\messageAdd.aspx" />
+    <Content Include="Admin\messageDetail.aspx" />
+    <Content Include="Admin\messageList.aspx" />
+    <Content Include="Admin\my.aspx" />
     <Content Include="Admin\OtherContrast.aspx" />
     <Content Include="Admin\Register.aspx" />
     <Content Include="Contact.aspx" />
@@ -428,8 +437,50 @@
     <Compile Include="Account\VerifyPhoneNumber.aspx.designer.cs">
       <DependentUpon>VerifyPhoneNumber.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\about.aspx.cs">
+      <DependentUpon>about.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\about.aspx.designer.cs">
+      <DependentUpon>about.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\feedbackAdd.aspx.cs">
+      <DependentUpon>feedbackAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\feedbackAdd.aspx.designer.cs">
+      <DependentUpon>feedbackAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\feedbackDetail.aspx.cs">
+      <DependentUpon>feedbackDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\feedbackDetail.aspx.designer.cs">
+      <DependentUpon>feedbackDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\feedbackList.aspx.cs">
+      <DependentUpon>feedbackList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\feedbackList.aspx.designer.cs">
+      <DependentUpon>feedbackList.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\GetData.ashx.cs">
       <DependentUpon>GetData.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\helpDetail.aspx.cs">
+      <DependentUpon>helpDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\helpDetail.aspx.designer.cs">
+      <DependentUpon>helpDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\helpList.aspx.cs">
+      <DependentUpon>helpList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\helpList.aspx.designer.cs">
+      <DependentUpon>helpList.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\HomePage.aspx.cs">
       <DependentUpon>HomePage.aspx</DependentUpon>
@@ -438,12 +489,43 @@
     <Compile Include="Admin\HomePage.aspx.designer.cs">
       <DependentUpon>HomePage.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\messageAdd.aspx.cs">
+      <DependentUpon>messageAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\messageAdd.aspx.designer.cs">
+      <DependentUpon>messageAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\messageDetail.aspx.cs">
+      <DependentUpon>messageDetail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\messageDetail.aspx.designer.cs">
+      <DependentUpon>messageDetail.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\messageList.aspx.cs">
+      <DependentUpon>messageList.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\messageList.aspx.designer.cs">
+      <DependentUpon>messageList.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\my.aspx.cs">
+      <DependentUpon>my.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\my.aspx.designer.cs">
+      <DependentUpon>my.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\OtherContrast.aspx.cs">
       <DependentUpon>OtherContrast.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\OtherContrast.aspx.designer.cs">
       <DependentUpon>OtherContrast.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\PageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\Register.aspx.cs">
       <DependentUpon>Register.aspx</DependentUpon>
@@ -501,6 +583,7 @@
   <ItemGroup>
     <Folder Include="Admin\source\" />
     <Folder Include="App_Data\" />
+    <Folder Include="File\" />
     <Folder Include="images\" />
     <Folder Include="imgusers\" />
     <Folder Include="plugins\" />

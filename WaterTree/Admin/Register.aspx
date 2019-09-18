@@ -94,7 +94,8 @@
     </script>--%>
 <script>
  
-
+    var belong = "";
+    var departID = "";
     mui.init();
     //layer组件初始化
     layui.use(['tree', 'form', 'util', 'laydate', 'upload', 'layer', 'jquery', 'element'], function () {
@@ -177,7 +178,7 @@
          , data = arr;
 
      //渲染数据
-     var belong = "";
+    
      tree.render({
          elem: '#tree'//div的ID
          , data: data
@@ -187,43 +188,63 @@
          , click: function (obj) {
              var data = obj.data;  //获取当前点击的节点数据
              belong = data.PathName;
+             departID = data.id;
              $('#belong').val(data.PathName);
          }
      });
-     $('#submit').on('click', function () {
-         var name = $('#name').val();
-         var phone = $('#phone').val();
-         if (name == '') {
-             mui.toast('真实姓名不能为空！');
-             return false;
-         }
-         if (phone == '') {
-             mui.toast('手机号码不能为空！');
-             return false;
-         }
-         if (phone.length != 11) {
-             mui.toast('手机号码位数有误！');
-             return false;
-         }
-         if (belong == "") {
-             mui.toast('请选择所属党支部！');
-             return false;
-         }
-         if (belong.length > 1) {
-             var arr = belong.split(',');
-             if (arr.length < 3) {
-                 mui.toast('所属党支部没有选择完毕，请继续选择');
-                 return false;
-             }
-         }
-         mui.alert('提交成功，若审核通过，我们会以短信形式通知您', '提示', function () {
-
-         });
-     })
+    
      });
 
 
-     
+    $('#submit').on('click', function () {
+        var name = $('#name').val();
+        var phone = $('#phone').val();
+        if (name == '') {
+            mui.toast('真实姓名不能为空！');
+            return false;
+        }
+        if (phone == '') {
+            mui.toast('手机号码不能为空！');
+            return false;
+        }
+        if (phone.length != 11) {
+            mui.toast('手机号码位数有误！');
+            return false;
+        }
+        if (belong == "") {
+            mui.toast('请选择所属党支部！');
+            return false;
+        }
+        if (belong.indexOf("党支部") == -1) {
+            mui.toast('所属党支部没有选择完毕，请继续选择');
+            return false;
+        }
+        mui.alert('提交成功，若审核通过，我们会以短信形式通知您', '提示', function () {
+            $.ajax({
+                type: "post",
+                async: false,
+                url: "/Admin/GetData.ashx?action=Register",
+                dataType: "json",
+                data: {
+                    'username': name,
+                    'mobile': phone,
+                    'departid': departID
+                },
+                success: function (result) {
+                    if (result.code == 0) {
+                        mui.toast(result.msg);
+                        window.open("my.aspx", "_self");
+                    } else {
+                        mui.toast(result.msg);
+                    }
+                },
+                error: function (errmsg) {
+                    mui.toast("服务器出错了！" + errmsg);
+                }
+
+            })
+        });
+    })
 
 </script>
 

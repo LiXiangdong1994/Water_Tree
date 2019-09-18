@@ -26,6 +26,12 @@ namespace WaterTree.Admin
             string action = context.Request["action"].ToString();
             switch (action)
             {
+                case "Register":
+                    Register(context);
+                    break;
+                case "CommitSuggest":
+                    CommitSuggest(context);
+                    break; 
                 case "GetTreeAndTaskCountByDayMonth":
                     GetTreeAndTaskCountByDayMonth(context);
                     break;
@@ -48,6 +54,12 @@ namespace WaterTree.Admin
 
                 case "GetLayerTreeData":
                     GetLayerTreeData(context);
+                    break;
+                case "GetUserTreeData":
+                    GetUserTreeData(context);
+                    break;
+                case "SendMessage":
+                    SendMessage(context);
                     break;
                 default:
                     break;
@@ -290,24 +302,25 @@ namespace WaterTree.Admin
         }
 
         //已抛弃
-        //public void GetLayerTreeData(HttpContext context)
-        //{
-        //    //已定义了实体类TreeData
-        //    SqlDataReader read = DbHelperSQL.ExecuteReader("select *  from vwDepartWithParentName");
-        //    List<TreeData> list = null;
-        //    list = new List<TreeData>();
-        //    while (read.Read())
-        //    {
-        //        TreeData treeData = new TreeData();
-        //        treeData.ID = int.Parse(read["ID"].ToString());
-        //        treeData.Name = read["departname"].ToString();
-        //        treeData.ParentID = int.Parse(read["parentid"].ToString());
-        //        treeData.PathName = read["path_name"].ToString();//
-        //        list.Add(treeData);
-        //    }
-        //    string jsonData = JsonConvert.SerializeObject(list);//转为Json格式
-        //    context.Response.Write(jsonData);
-        //}
+        //已抛弃
+        public void GetUserTreeData(HttpContext context)
+        {
+            //已定义了实体类TreeData
+            SqlDataReader read = DbHelperSQL.ExecuteReader("select * from vwUserWithParentName");
+            List<TreeData> list = null;
+            list = new List<TreeData>();
+            while (read.Read())
+            {
+                TreeData treeData = new TreeData();
+                treeData.id = int.Parse(read["id"].ToString());
+                treeData.title = read["Name"].ToString();
+                treeData.ParentID = int.Parse(read["parentid"].ToString());
+                treeData.PathName = read["path_name"].ToString();//
+                list.Add(treeData);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);//转为Json格式
+            context.Response.Write(jsonData);
+        }
 
 
 
@@ -322,7 +335,7 @@ namespace WaterTree.Admin
 
         public void GetLayerTreeData(HttpContext context)
         {
-            SqlDataReader read = DbHelperSQL.ExecuteReader("select *  from vwDepartWithParentName");
+            SqlDataReader read = DbHelperSQL.ExecuteReader("select id,departname,parentid ,path_name from bdepart");
             List<TreeData> list = null;
             list = new List<TreeData>();
             while (read.Read())
@@ -332,14 +345,6 @@ namespace WaterTree.Admin
                 treeData.title = read["departname"].ToString();
                 treeData.ParentID = int.Parse(read["parentid"].ToString());
                 treeData.PathName = read["path_name"].ToString();
-                try
-                {
-                    treeData.ParentName = read["parentname"].ToString();
-                }
-                catch (Exception ex)
-                {
-                    treeData.ParentName = "";
-                }
                 list.Add(treeData);
             }
 
@@ -368,7 +373,6 @@ namespace WaterTree.Admin
                     temp.id = model.id;
                     temp.ParentID = model.ParentID;
                     temp.title = model.title;
-                    temp.ParentName = model.title;
                     temp.PathName = model.title;
                     temp.children = new List<TreeData>();
                     _name = model.title;
@@ -381,7 +385,6 @@ namespace WaterTree.Admin
                     temp.id = model.id;
                     temp.ParentID = model.ParentID;
                     temp.title = model.title;
-                    temp.ParentName = model.ParentName;
                     temp.PathName = model.PathName;
                     temp.children = new List<TreeData>();
                     pnode.children.Add(temp);
@@ -390,9 +393,197 @@ namespace WaterTree.Admin
             }
             return pnode;
         }
+        /// <summary>
+        /// 注册
+        /// </summary>
+        /// <param name="context"></param>
+        public void Register(HttpContext context)
+        {
+            string username=context.Request["username"];
+            string mobile= context.Request["mobile"];
+            string departid= context.Request["departid"];
+            UserInfo user = new UserInfo();
+            user.username = username;
+            user.mobile = mobile;
+            user.departid = departid;
+            int num = DbHelperSQL.ExecuteSql("insert into sys_UserInfo(username,mobile,departid) values('"+ username + "','" + mobile + "','" + departid + "')");
+            var result = new BaseDataPackage<UserInfo>();
+            if (num != 0) {
+            result.code = ApiStatusCode.OK;
+            result.data = user;
+            result.msg = "注册成功";
+            }else
+            {
+                result.code = ApiStatusCode.FAIL;
+                result.data = user;
+                result.msg = "注册失败";
+            }
+            string jsonData = JsonConvert.SerializeObject(result);
+            context.Response.Write(jsonData);
+        }
+        public void CommitSuggest(HttpContext context)
+        {
+            string fileNewName = string.Empty;
+            string filePath = string.Empty;
+            var result = new BaseDataPackage<UserSuggest>();
+            HttpPostedFile file = context.Request.Files["file1"];
+            HttpPostedFile file2 = context.Request.Files["file2"];
+            HttpPostedFile file3 = context.Request.Files["file3"];
+            string Title = context.Request["Title"];
+            string Suggest = context.Request["Suggest"];
+            string UserID = context.Request["UserID"];
+            string paths = context.Request["paths"];
+            string pathsNew = "";
+            if ( paths!= "")
+            {
+                string[] sArray = paths.Split(',');
+                foreach (string pathSplit in sArray) {
+                    if (pathSplit != "") {
+                    fileNewName = DateTime.Now.ToString("yyyyMMddHHmmssff") + "_" + System.IO.Path.GetFileName(pathSplit);
+                    string virtualPath = String.Format("/File/{0}", fileNewName);//上传到指定文件夹
+                    string path = virtualPath;//相对获取文件路径
+                    pathsNew += path + ",";
+                 }
+                }
+            }
+            if (file!=null)
+            {
+                file.SaveAs(context.Server.MapPath("~/File/" + DateTime.Now.ToString("yyyyMMddHHmmssff") + "_" + System.IO.Path.GetFileName(file.FileName)));
+            }
+            if (file2 != null)
+            {
+                file2.SaveAs(context.Server.MapPath("~/File/" + DateTime.Now.ToString("yyyyMMddHHmmssff") + "_" + System.IO.Path.GetFileName(file2.FileName)));
+            }
+            if (file3 != null)
+            {
+                file3.SaveAs(context.Server.MapPath("~/File/" + DateTime.Now.ToString("yyyyMMddHHmmssff") + "_" + System.IO.Path.GetFileName(file3.FileName)));
+            }
+            result.code = ApiStatusCode.OK;
+            result.msg = "";
+            result.data = null;
+            UserSuggest userSuggest = new UserSuggest();
+            userSuggest.commitUserID = int.Parse(UserID);
+            userSuggest.title = Title;
+            userSuggest.suggest = Suggest;
+            userSuggest.commitDate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+            userSuggest.files = pathsNew;
+            int num = DbHelperSQL.ExecuteSql("insert into sys_UserSuggest(commitUserID,title,suggest,commitDate,files) values('" + userSuggest.commitUserID + "','" + userSuggest.title + "','" + userSuggest.suggest + "','" + userSuggest.commitDate + "','" + userSuggest.files + "')");
+            if (num != 0)
+            {
+                result.code = ApiStatusCode.OK;
+                result.msg = "提交成功！";
+                result.data = userSuggest;
+            }
+            else
+            {
+                result.code = ApiStatusCode.OK;
+                result.msg = "提交失败！";
+                result.data = userSuggest;
+            }
+            string jsonData = JsonConvert.SerializeObject(result);
+            context.Response.Write(jsonData);
+        }
+
+        //发布消息的树
+        //public void GetUserTreeData(HttpContext context)
+        //{
+        //    SqlDataReader read = DbHelperSQL.ExecuteReader("select * from vwUserWithParentName");
+        //    List<TreeData> list = null;
+        //    list = new List<TreeData>();
+        //    while (read.Read())
+        //    {
+        //        TreeData treeData = new TreeData();
+        //        treeData.id = int.Parse(read["id"].ToString());
+        //        treeData.title = read["Name"].ToString();
+        //        treeData.ParentID = int.Parse(read["parentid"].ToString());
+        //        treeData.PathName = read["path_name"].ToString();
+        //        list.Add(treeData);
+        //    }
+
+        //    TreeData tree = new TreeData();
+        //    tree.id = list[0].id;
+        //    tree.ParentID = list[0].ParentID;
+        //    tree.title = list[0].title;
+        //    tree.children = new List<TreeData>();
+        //    string name = "";
+        //    tree = GetTree(list, tree, name);
+        //    string jsonData = JsonConvert.SerializeObject(tree);
+        //    context.Response.Write(jsonData);
+        //}
+
+        public void SendMessage(HttpContext context)
+        {
+            var result = new BaseDataPackage<UserMessage>();
+            string AcceptUserID = context.Request["AcceptUserID"];
+            string AcceptUserName = context.Request["AcceptUserName"];
+            string SendUserID = context.Request["SendUserID"];
+            string SendUserName = context.Request["SendUserName"];
+            string MsgTitle = context.Request["MsgTitle"];
+            string MsgText = context.Request["MsgText"];
+            string SendToList = context.Request["SendToList"];
+            string MessageType ="";
+
+
+            UserMessage UserMessage = new UserMessage();
+            UserMessage.AcceptUserID = AcceptUserID;
+            UserMessage.AcceptUserName = AcceptUserName;
+            UserMessage.SendUserID = SendUserID;
+            UserMessage.SendUserName = SendUserName;
+            UserMessage.MsgTitle = MsgTitle;
+            UserMessage.MsgText = MsgText;
+            UserMessage.SendToList = SendToList;
+            UserMessage.MessageType = MessageType;
+            UserMessage.bRead = false;
+            UserMessage.SendDateTime = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+            int num = DbHelperSQL.ExecuteSql("insert into sys_UserMessage (AcceptUserID, AcceptUserName, SendUserID, SendUserName, MsgTitle, MsgText, SendToList, MessageType, bRead, SendDateTime) values('" + AcceptUserID + "', '" + AcceptUserName + "', '" + SendUserID + "', '" + SendUserName+ "', '" +MsgTitle + "' , '" +MsgText + "', '" +SendToList + "', '" +MessageType + "', '" + false + "', '" + UserMessage.SendDateTime + "' )");
+            if (num != 0)
+            {
+                result.code = ApiStatusCode.OK;
+                result.msg = "发送成功！";
+                result.data = UserMessage;
+            }
+            else
+            {
+                result.code = ApiStatusCode.OK;
+                result.msg = "发送失败！";
+                result.data = UserMessage;
+            }
+            string jsonData = JsonConvert.SerializeObject(result);
+            context.Response.Write(jsonData);
+        }
 
 
 
+
+        /// <summary>
+        /// 状态码
+        /// </summary>
+        public class ApiStatusCode
+        {
+            /// <summary>
+            /// OK
+            /// </summary>
+            public const int OK = 0;
+
+            /// <summary>
+            /// 失败
+            /// </summary>
+            public const int FAIL = 1;
+
+            /// <summary>
+            /// 异常
+            /// </summary>
+            public const int EXCEPTION = 2;
+        }
+
+        public class BaseDataPackage<T>
+        {
+            public int code { get; set; }
+            public string msg { get; set; }
+            public T data { get; set; }
+
+
+        }
 
         public bool IsReusable
         {
