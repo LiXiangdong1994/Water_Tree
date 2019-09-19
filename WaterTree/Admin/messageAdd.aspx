@@ -46,7 +46,6 @@
         <div class="mui-input-group public-form">
         <div class="mui-input-row" id="select" style="padding-top: 0;">
             <input type="text" id="belong" placeholder="请选择选择发送对象">
-             <input type="text" id="belongHide" placeholder="请选择选择发送对象"  style="display:none">
         </div>
         </div>
     </div>
@@ -109,7 +108,6 @@
 </script>
 
     <script>
- 
     var belong = "";
     var departID = "";
     mui.init();
@@ -138,9 +136,8 @@
             });
             return data2;
         }
-    
+        var arr = GetLayerTreeData();
     //通过下面函数循环将Json换成树形图需要的格式（已抛弃）
-     var arr = GetLayerTreeData();
      var newArr = [];
         arr.forEach(function(item){
             var childrenArr = [];
@@ -151,7 +148,7 @@
                     newArr.push({
                         id: arr[i]['id'],
                         spread: false,
-                        title: arr[i]['title'],
+                        title: arr[i]['title'] + "-",
                         title2: arr[i]['title']//路径 供输入框显示
                     });
                     //最高级添加进去之后删除此条数据
@@ -163,7 +160,7 @@
                             childrenArr.push({
                                 id: arr[j]['id'],
                                 spread: false,
-                                title: arr[j]['title'],
+                                title: arr[j]['title'] + "-",
                                 title2: arr[j]['PathName']
                             })
                             arr.splice(j,1);
@@ -178,7 +175,7 @@
                                 childrenArr2.push({
                                     id: arr[k]['id'],
                                     spread: false,
-                                    title: arr[k]['title'],
+                                    title: arr[k]['title'] + "-",
                                     title2: arr[k]['PathName']
                                 })
                                 arr.splice(k,1);
@@ -203,7 +200,6 @@
                             }
                         })
                     })
-                   
                     newArr[0].children = childrenArr;
                 }
             }
@@ -212,7 +208,7 @@
          , layer = layui.layer
          , util = layui.util
          , data = newArr;
-
+        //渲染数据
      tree.render({
          elem: '#tree'
          , data: data
@@ -221,11 +217,9 @@
          , isJump: false //是否允许点击节点时弹出新窗口跳转
          , click: function (obj) {
              var data = obj.data;  //获取当前点击的节点数据
-             // console.log(obj)
-             // belong = data.title2;
          }
      });
-    
+    //点击确认
      util.event('lay-demo', {
          getChecked: function (othis) {
              var html = "";
@@ -233,50 +227,18 @@
              var array = new Array();
              var list = $(".layui-form-checked").parent('.layui-tree-main:last-child').find(".layui-tree-txt")
              for (var i = 0; i < list.length; i++) {
-                 if (list[i].innerHTML.indexOf("委会") == -1 && list[i].innerHTML.indexOf("镇") == -1&& list[i].innerHTML.indexOf("党支部") == -1) {
+                 if (list[i].innerHTML.indexOf("-") == -1) {
                      array.push(list[i].innerHTML);
                  }
              }
-             alert(array)
              $('#belong').val(array);
-             var checkedData = tree.getChecked('demoId1'); //获取选中节点的数据
-             checkedData.forEach(function (value, index) {
-                 var arr2 = value.children;  // 社区级别
-                 if (arr2 == undefined) {
-                     return false
-                 }
-                 arr2.forEach(function (value, index) {
-                     var arr3 = value.children;  // 党支部
-                     if (arr3 == undefined) {
-                         return false
-                     }
-                     arr3.forEach(function (value, index) {
-                         var arr4 = value.children;  // 党员
-                         if (arr4 == undefined) {
-                             return false
-                         }
-                         arr4.forEach(function (value, index) {
-                             console.log(value)
-                             html += value.title;
-                             html += ",";
-                             html2 += value.id;
-                             html2 += ",";
-                         });
-                       
-                         $('#belongHide').val(html2);
-                     })
-                 })
-             })
          }
      });
-
-
      });
     $('#send').on('click', function () {
         var MsgTitle = $('#MsgTitle').val();
         var MsgText = $('#MsgText').val();
         var belong = $('#belong').val();
-        var belongHide = $('#belongHide').val();
         if (MsgTitle == '') {
             mui.toast('主题不能为空！');
             return false;
@@ -294,13 +256,11 @@
             async: false,
             url: "/Admin/GetData.ashx?action=SendMessage",
             data: {
-                'AcceptUserID':belongHide,
                 'AcceptUserName':belong,
                 'SendUserID': '3',
                 'SendUserName':'刘映红',
                 'MsgTitle': MsgTitle,
                 'MsgText': MsgText,
-                'SendToList': belongHide,
             },
             dataType: "json",
             success: function (result) {
@@ -316,7 +276,6 @@
             }
         })
     })
-
 </script>
 </body>
 </html>

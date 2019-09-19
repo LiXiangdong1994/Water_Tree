@@ -45,6 +45,9 @@ namespace WaterTree.Admin
                 case "PartyContrastByMonth":
                     PartyContrastByMonth(context);
                     break;
+                case "MonthContrastByYear":
+                    MonthContrastByYear(context);
+                    break;
                 case "YearContrast":
                     YearContrast(context);
                     break;
@@ -300,9 +303,39 @@ namespace WaterTree.Admin
             string jsonData = JsonConvert.SerializeObject(list);
             context.Response.Write(jsonData);
         }
-
-        //已抛弃
-        //已抛弃
+        //年对比12个月
+        public void MonthContrastByYear(HttpContext context)
+        {
+            string compareObject = context.Request["compareObject"];
+            string year = context.Request["year"];
+            if (year != "")
+            {
+                year = year.ToString();
+            }
+            else
+            {
+                year = "2019";
+            }
+            IDataParameter[] parames = new IDataParameter[2];
+            parames[0] = new SqlParameter("@View", compareObject);
+            parames[1] = new SqlParameter("@Year", year);
+            SqlDataReader MonthTreeDR = DbHelperSQL.RunProcedure("GetCountByMonthInYearNODepart", parames);
+            List<ChartDa> list = null;
+            if (MonthTreeDR.HasRows)
+            {
+                list = new List<ChartDa>();
+                while (MonthTreeDR.Read())
+                {
+                    ChartDa data = new ChartDa();
+                    data.Time = MonthTreeDR["Time"].ToString();
+                    data.TreeNum = int.Parse(MonthTreeDR["Sum"].ToString());
+                    list.Add(data);
+                }
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write(jsonData);
+        }
+        //发布消息的树
         public void GetUserTreeData(HttpContext context)
         {
             //已定义了实体类TreeData
@@ -484,46 +517,31 @@ namespace WaterTree.Admin
             context.Response.Write(jsonData);
         }
 
-        //发布消息的树
-        //public void GetUserTreeData(HttpContext context)
-        //{
-        //    SqlDataReader read = DbHelperSQL.ExecuteReader("select * from vwUserWithParentName");
-        //    List<TreeData> list = null;
-        //    list = new List<TreeData>();
-        //    while (read.Read())
-        //    {
-        //        TreeData treeData = new TreeData();
-        //        treeData.id = int.Parse(read["id"].ToString());
-        //        treeData.title = read["Name"].ToString();
-        //        treeData.ParentID = int.Parse(read["parentid"].ToString());
-        //        treeData.PathName = read["path_name"].ToString();
-        //        list.Add(treeData);
-        //    }
 
-        //    TreeData tree = new TreeData();
-        //    tree.id = list[0].id;
-        //    tree.ParentID = list[0].ParentID;
-        //    tree.title = list[0].title;
-        //    tree.children = new List<TreeData>();
-        //    string name = "";
-        //    tree = GetTree(list, tree, name);
-        //    string jsonData = JsonConvert.SerializeObject(tree);
-        //    context.Response.Write(jsonData);
-        //}
+     
 
         public void SendMessage(HttpContext context)
         {
             var result = new BaseDataPackage<UserMessage>();
-            string AcceptUserID = context.Request["AcceptUserID"];
+            string AcceptUserID ="";
             string AcceptUserName = context.Request["AcceptUserName"];
             string SendUserID = context.Request["SendUserID"];
             string SendUserName = context.Request["SendUserName"];
             string MsgTitle = context.Request["MsgTitle"];
             string MsgText = context.Request["MsgText"];
-            string SendToList = context.Request["SendToList"];
+            string SendToList = "";
             string MessageType ="";
-
-
+            string[] sArray = AcceptUserName.Split(',');
+            string AcceptUserName2 = "";
+            foreach (string i in sArray)
+            {
+                AcceptUserName2 += "'"+ i +"'"+",";
+            }
+                SqlDataReader dr = DbHelperSQL.ExecuteReader("select id from sys_UserInfo  where username in ("+ AcceptUserName2.TrimEnd(',') + ")");
+            while (dr.Read())
+            {
+                AcceptUserID += dr["id"].ToString()+",";
+            }
             UserMessage UserMessage = new UserMessage();
             UserMessage.AcceptUserID = AcceptUserID;
             UserMessage.AcceptUserName = AcceptUserName;
@@ -552,7 +570,7 @@ namespace WaterTree.Admin
             context.Response.Write(jsonData);
         }
 
-
+        
 
 
         /// <summary>
@@ -575,6 +593,10 @@ namespace WaterTree.Admin
             /// </summary>
             public const int EXCEPTION = 2;
         }
+
+
+
+
 
         public class BaseDataPackage<T>
         {

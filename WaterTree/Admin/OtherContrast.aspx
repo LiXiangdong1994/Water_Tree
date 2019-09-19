@@ -48,6 +48,7 @@
 <body class="gray-bg">
     <input id="TownNameHide" style="display:none"/><%--用于记录图2的镇名--%>
      <input id="YearCompareObjectHide" style="display:none"/><%--用于记录图2的年对比对象--%>
+     <input id="MonthCompareObjectHide" style="display:none"/><%--用于记录图2的月对比对象--%>
      <input id="PartyCompareObjectHide" style="display:none"/><%--用于记录图2的党支部对比对象--%>
      <input id="TreeTypeCompareObjectHide" style="display:none"/><%--用于记录图3的树类对比对象--%>
       <input id="PartyCompareObjectInMonthHide" style="display:none"/><%--用于记录图3的月对比对象--%>
@@ -199,7 +200,14 @@
                 splitLine: false,
                 type: 'value',
                 //splitArea : {show : true}
-                show: true
+                show: true,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        type: 'dashed',
+                        color: '#ccc'
+                    }
+                },
             }
         ],
         series: [
@@ -264,36 +272,59 @@
                 data: []
             }
         ],
-        yAxis: [
-            {
-                splitLine: false,
-                type: 'value',
-                //splitArea : {show : true}
-                show: true
-            }
-        ],
+        yAxis: [{
+            type: 'value',
+            axisLine: {
+                onZero: false,
+                lineStyle: {
+                    color: '#0a2b52',
+                    width: 1, //这里是为了突出显示加上的
+                }
+            },
+            axisLabel: {
+                show: true,
+                textStyle: {
+                    color: '#6ba1bb' //字体颜色
+                }
+            },
+            splitLine: {
+                show: true,
+                lineStyle: {
+                    type: 'dashed',
+                    color: '#ccc'
+
+                }
+
+            },
+        }],
         series: [
             {
                 //name:'小学',
                 type: 'line',
+                smooth: true,
+                //  symbol: "none", //去掉折线点
+                stack: 100,
                 itemStyle: {
-                    normal: {
-                        //color: function (params) {
-                        //    // build a color map as your need.
-                        //    var colorList = [
-                        //        '#C1232B', '#B5C334', '#FCCE10', '#E87C25', '#27727B',
-                        //        '#FE8463', '#9BCA63', '#FAD860', '#F3A43B', '#60C0DD',
-                        //        '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0',
-                        //        '#D7504B', '#C6E579', '#F4E001', '#F0805A', '#26C0C0'
-                        //    ];
-                        //    return colorList[params.dataIndex]
-                        //},
-                        label: {
-                            show: false,
-                            position: 'top',
-                            formatter: '{b}\n{c}'
+                    normal: { //颜色渐变函数 前四个参数分别表示四个位置依次为左、下、右、上
+                        color: '#3a87bb', //背景渐变色
+                        lineStyle: { // 系列级个性化折线样式
+                            width: 0.5,
+                            type: 'solid',
+                            color: "#3a87bb"
+                        }
+                    },
+                    emphasis: {
+                        color: '#02675f',
+                        lineStyle: { // 系列级个性化折线样式
+                            width: 0.5,
+                            type: 'dotted',
+                            color:" #3a87bb" //折线的颜色
                         }
                     }
+                }, //线条样式
+                symbolSize: 5, //折线点的大小
+                areaStyle: {
+                    normal: {}
                 },
                 data: []
             }
@@ -339,7 +370,16 @@
                 splitLine: false,
                 type: 'value',
                 //splitArea : {show : true}
-                show: true
+                show: true,
+                splitLine: {
+                    show: true,
+                    lineStyle: {
+                        type: 'dashed',
+                        color: '#ccc'
+
+                    }
+
+                },
             }
         ],
         series: [
@@ -402,14 +442,14 @@
     );
     var h1 = new Array();
     var itemIndex = 0;
-
+    var options = $("#item option:selected");
 //进入页面：加载图1饼状图镇区数对比
     function GetTownTreeCount() {
          var Time = new Array();
          var TownName=new Array();
          var TreeNum = new Array();
          var option1Arr = new Array();
-         var options = $("#item option:selected");//获取当前选择项.
+       //获取当前选择项.
          var compareObjectVal = options.val();
          var compareObjectItem = options.text();
          year = $("#year").val();
@@ -417,6 +457,7 @@
              $("#PartyCompareObjectHide").val("vwPartyTreeSum");
              $("#PartyCompareObjectInMonthHide").val("vwTreeCountDayInMonth");
              $("#YearCompareObjectHide").val("vwTreeSumByYear");
+             $("#MonthCompareObjectHide").val("vwTreeCountDayInMonth");
              $("#TreeTypeCompareObjectHide").val("vwTreeSumByTreeName");
              
          }
@@ -424,18 +465,21 @@
              $("#PartyCompareObjectHide").val("vwPartyTaskSum");
              $("#PartyCompareObjectInMonthHide").val("vwTaskCountDayInMonth");
              $("#YearCompareObjectHide").val("vwTaskSumByYear");
+             $("#MonthCompareObjectHide").val("vwTaskCountDayInMonth");
              $("#TreeTypeCompareObjectHide").val("vwTaskSumByTreeName");
          }
          if (compareObjectVal == "vwTownGoodSum") {
              $("#PartyCompareObjectHide").val("vwPartyGoodSum");
              $("#PartyCompareObjectInMonthHide").val("vwGoodCountDayInMonth");
              $("#YearCompareObjectHide").val("vwGoodSumByYear");
+             $("#MonthCompareObjectHide").val("vwGoodCountDayInMonth");
              $("#TreeTypeCompareObjectHide").val("vwGoodSumByTreeName");
          }
          if (compareObjectVal == "vwTownScoreSum") {
              $("#PartyCompareObjectHide").val("vwPartyScoreSum");
              $("#PartyCompareObjectInMonthHide").val("vwScoreCountDayInMonth");
              $("#YearCompareObjectHide").val("vwScoreSumByYear");
+             $("#MonthCompareObjectHide").val("vwScoreCountDayInMonth");
              $("#TreeTypeCompareObjectHide").val("vwScoreSumByTreeName");
          } 
         $.ajax({
@@ -467,8 +511,7 @@
     function GetYearCotrastCount() {
         var Time = new Array();
         var option1Arr = new Array();
-        var options = $("#item option:selected");//获取当前选择项.
-        var compareObjectVal = $("#YearCompareObjectHide").val();;//对比项
+        var compareObjectVal = $("#YearCompareObjectHide").val();//对比项
         var compareObjectItem = options.text();
         console.log(compareObjectVal);
         $.ajax({
@@ -500,7 +543,6 @@
     function GetTreeTypeCotrastCount() {
         var Time = new Array();
         var option1Arr = new Array();
-        var options = $("#item option:selected");//获取当前选择项.
         var compareObjectVal = $("#TreeTypeCompareObjectHide").val();;//对比项
         var compareObjectItem = options.text();
         console.log(compareObjectVal);
@@ -536,7 +578,6 @@
      var PartyName = new Array();
      var TreeNum = new Array();
      var option1Arr = new Array();
-     var options=$("#item option:selected");//获取当前选择项.
      var compareObjectVal = $("#PartyCompareObjectHide").val();//对比项
      var compareObjectItem = options.text();
      var year = $("#year").val();//对比年份
@@ -570,39 +611,67 @@
  }
 
  //点击图2的柱状图 加载图3
- function GetMonthTreeCount(townName,partyName) {
+    function GetMonthTreeCount(townName, partyName, contractYear) {
+        var title = option2.title.text;
      var Time = new Array();
      var TreeNum = new Array();
-     var options = $("#item option:selected");//获取当前选择项.
-     var PartyCompareObjectInMonthHide = $("#PartyCompareObjectInMonthHide").val();
-     var compareObjectItem = options.text();
-     year = $("#year").val();
-     $.ajax({
-         type: "get",
-         async: false,
-         url: "/Admin/GetData.ashx?action=PartyContrastByMonth",
-         data: { 'compareObject': PartyCompareObjectInMonthHide, 'year': year, 'TownName': townName, 'PartyName': partyName },
-         dataType: "json",
-         success: function (data) {
-             for (var i = 0; i < data.length; i++) {
-                 Time.push(data[i].Time);
-                 TreeNum.push(data[i].TreeNum);
+
+     if (title.indexOf("各年") == -1) {
+         var PartyCompareObjectInMonthHide = $("#PartyCompareObjectInMonthHide").val();
+         var compareObjectItem = options.text();
+         year = $("#year").val();
+         $.ajax({
+             type: "get",
+             async: false,
+             url: "/Admin/GetData.ashx?action=PartyContrastByMonth",
+             data: { 'compareObject': PartyCompareObjectInMonthHide, 'year': year, 'TownName': townName, 'PartyName': partyName },
+             dataType: "json",
+             success: function (data) {
+                 for (var i = 0; i < data.length; i++) {
+                     Time.push(data[i].Time);
+                     TreeNum.push(data[i].TreeNum);
+                 }
+                 if (townName == "") {
+                     townName = "石龙镇";
+                 }
+                 if (partyName == "") {
+                     partyName = "石龙镇党支部1";
+                 }
+                 option3.title.text = townName + partyName + "--" + year + "年各月" + compareObjectItem + "对比"
+                 option3.xAxis[0].data = Time;
+                 option3.series[0].data = TreeNum;
+                 myChart3.setOption(option3);
+             },
+             error: function (errmsg) {
+                 alert("Ajax获取服务器数据出错了！" + errmsg);
              }
-             if (townName == "") {
-                 townName = "石龙镇";
+         });
+     } else {
+         var MonthCompareObjectHide = $("#MonthCompareObjectHide").val();
+         var compareObjectItem = options.text();
+         $.ajax({
+             type: "get",
+             async: false,
+             url: "/Admin/GetData.ashx?action=MonthContrastByYear",
+             data: { 'compareObject': MonthCompareObjectHide, 'year': contractYear },
+             dataType: "json",
+             success: function (data) {
+                 for (var i = 0; i < data.length; i++) {
+                     Time.push(data[i].Time);
+                     TreeNum.push(data[i].TreeNum);
+                 }
+                
+                 option3.title.text = contractYear + "年各月" + compareObjectItem + "对比"
+                 option3.xAxis[0].data = Time;
+                 option3.series[0].data = TreeNum;
+                 myChart3.setOption(option3);
+             },
+             error: function (errmsg) {
+                 alert("Ajax获取服务器数据出错了！" + errmsg);
              }
-             if (partyName == "") {
-                 partyName = "石龙镇党支部1";
-             }
-             option3.title.text = townName + partyName + "--" + year + "年各月" + compareObjectItem + "对比"
-             option3.xAxis[0].data = Time;
-             option3.series[0].data = TreeNum;
-             myChart3.setOption(option3);
-         },
-         error: function (errmsg) {
-             alert("Ajax获取服务器数据出错了！" + errmsg);
-         }
-     });
+         });
+     }
+
  }
 
 
@@ -640,10 +709,11 @@
     }
         //图2鼠标点击
     function click2(year, index, e) {
-        var  partyName= e.name;
+        var partyName = e.name;
+        var contractYear = e.name;
         myChart3.clear();
         var townName = $("#TownNameHide").val();
-        GetMonthTreeCount(townName, partyName);
+        GetMonthTreeCount(townName, partyName, contractYear);
        
 
     }

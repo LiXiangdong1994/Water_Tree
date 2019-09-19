@@ -24,6 +24,9 @@
             width:100px;
             height:30px;
         }
+        #OtherContrast{
+            margin-left:20px;
+        }
     </style>
 </head>
 <body  class="gray-bg">
@@ -91,8 +94,8 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5 style="margin-top:10px;">活动情况</h5> 
-                        <asp:Button ID="OtherContrast" runat="server" Text="其他统计图" OnClick="OtherContrast_Click" />
+                        <h5 style="margin-top:10px;font-size:20px;">活动情况</h5> 
+                        <asp:Button ID="OtherContrast" runat="server" Text="其他统计图" OnClick="OtherContrast_Click"  class="layui-btn layui-btn-normal"/>
 
                     </div>
                     <div class="ibox-content">
@@ -364,65 +367,160 @@ function InitChart(Time, TreeNum,TaskNum) {
     myCharts.style.width = '1096px';
     myCharts.style.height = '400px';
     option = {
-        legend:[
-            {
-             name: '',
-            },
+      
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        grid: {
+            left: '2%',
+            right: '4%',
+            bottom: '14%',
+            top: '16%',
+            containLabel: true
+        },
+        legend: [
+      {
+          name: '',
+          textStyle: {
+              color: "#11000a"
+          },
+      },
         ],
         //横坐标信息
         xAxis: {
             type: 'category',
             data: Time,
+            axisLine: {
+                lineStyle: {
+                    color: '#11000a'
+
+                }
+            },
+            axisLabel: {
+                // interval: 0,
+                // rotate: 40,
+                textStyle: {
+                    fontFamily: 'Microsoft YaHei'
+                }
+            },
             },
         //纵坐标信息
         yAxis: {
             type: 'value',
-axisLine: { show: true },
-min: 0,
-max: 100,//最大多少
-splitNumber: 5,//隔几个分开
+        max: '100',
+        axisLine: {
+            show: false,
+            lineStyle: {
+                color: '#11000a'
+            }
         },
+        splitLine: {
+            show: true,
+            lineStyle: {
+                type:'dash',
+                color: '#e7eaec'
+            }
+        },
+        axisLabel: {}
+        },
+        "dataZoom": [{
+            "show": true,
+            "height": 12,
+            "xAxisIndex": [
+              0
+            ],
+            bottom: '8%',
+            "start": 10,
+            "end": 90,
+            handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
+            handleSize: '110%',
+            handleStyle: {
+                color: "#d3dee5",
+
+            },
+            textStyle: {
+            },
+            borderColor: "#90979c"
+        }, {
+            "type": "inside",
+            "show": true,
+            "height": 15,
+            "start": 1,
+            "end": 35
+        }],
         series: [
               {
                   name: '当月植树数',//图例名称
                   data: TreeNum,//数据
-                  type: 'bar',//柱状
-                  /*颜色*/
+                  type: 'bar',
+                  barWidth: '40%',
                   itemStyle: {
                       normal: {
-                          color: '#a3e1d4',
-                           }
+                          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                              offset: 0,
+                              color: '#fccb05'
+                          }, {
+                              offset: 1,
+                              color: '#f5804d'
+                          }]),
+                          barBorderRadius: 12,
+                      },
                   },
               },
               {
                   symbol: "none",
                   name: '当月活动数',
                   data: TaskNum,
-                  type: 'line',
-                  smooth: true,
-                  areaStyle: {
+                  type: 'bar',
+                  barWidth: '50%',
+                  itemStyle: {
                       normal: {
-                          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: "#dadce7" },
-                            { offset: 0.5, color: "#dadce7" },
-                            { offset: 1, color: "#dadce7" }
-                          ])
+                          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                              offset: 0,
+                              color: '#8bd46e'
+                          }, {
+                              offset: 1,
+                              color: '#09bcb7'
+                          }]),
+                          barBorderRadius: 11,
                       }
-                  },
-                  itemStyle: {  /*设置折线颜色*/
-                      normal: {
-                          color: '#698aa0'
-                      }
+
                   },
               }]
-    };
+    };
+    var app = {
+        currentIndex: -1,
+    };
+    setInterval(function () {
+        var dataLen = option.series[0].data.length;
+
+        // 取消之前高亮的图形
+        myChart.dispatchAction({
+            type: 'downplay',
+            seriesIndex: 0,
+            dataIndex: app.currentIndex
+        });
+        app.currentIndex = (app.currentIndex + 1) % dataLen;
+        //console.log(app.currentIndex);
+        // 高亮当前图形
+        myChart.dispatchAction({
+            type: 'highlight',
+            seriesIndex: 0,
+            dataIndex: app.currentIndex,
+        });
+        // 显示 tooltip
+        myChart.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: app.currentIndex
+        });
+
+
+    }, 1000);
     myChart.setOption(option);
-    setTimeout(function (){
-        window.onresize = function () {
-            myChart.resize();
-           
-        }
-    })
 
 }
 

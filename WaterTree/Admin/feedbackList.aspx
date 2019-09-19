@@ -6,6 +6,11 @@
 <head runat="server">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title></title>
+        <style>
+        .feedbackList .feed-bottom {
+    height: 0.14rem;
+}
+    </style>
 </head>
 <body style="background: #f5f5f5">
     <form id="form1" runat="server">

@@ -19,6 +19,7 @@ namespace WaterTree.Admin
             GetAllMessageList(AcceptUserName, SendUserName);
             GetReadMessageList(AcceptUserName, SendUserName);
             GetNotReadMessageList(AcceptUserName, SendUserName);
+            GetMySendMessageList(SendUserName);
         }
         protected void GetAllMessageList(string AcceptUserName, string SendUserName)
         {
@@ -28,8 +29,7 @@ namespace WaterTree.Admin
             DataView dv = ds.Tables[0].DefaultView;
             ALLMessageList.DataSource = dv;
             ALLMessageList.DataBind();
-            MySendMessage.DataSource = dv;
-            MySendMessage.DataBind();
+           
         }
         protected void GetReadMessageList(string AcceptUserName, string SendUserName)
         {
@@ -48,6 +48,16 @@ namespace WaterTree.Admin
             DataView dv = ds.Tables[0].DefaultView;
             NotReadMessageList.DataSource = dv;
             NotReadMessageList.DataBind();
+        }
+
+        protected void GetMySendMessageList(string SendUserName)
+        {
+
+            DataSet ds = new DataSet();
+            ds = DbHelperSQL.Query("select * from sys_UserMessage where SendUserName='" + SendUserName + "'");
+            DataView dv = ds.Tables[0].DefaultView;
+            MySendMessage.DataSource = dv;
+            MySendMessage.DataBind();
         }
     }
 }

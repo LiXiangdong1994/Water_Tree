@@ -197,7 +197,7 @@ namespace WaterTree.Admin
             {
                 NowMonth = double.Parse( dt2.Tables[0].Rows[0]["num"].ToString());
             }
-            ActivePercent.InnerText = ((NowMonth - LeastMonth) / LeastMonth).ToString("0%");
+            ActivePercent.InnerText = (NowMonth / LeastMonth).ToString("0%");
             Month.InnerText= DateTime.Now.ToString("MM")+"月";
         }
 
@@ -227,7 +227,7 @@ namespace WaterTree.Admin
    
                   SqlDataAdapter sda = new SqlDataAdapter();
             DataSet ds = new DataSet();
-            ds = DbHelperSQL.Query("select *,  DATEDIFF(DAY, menddate,GETDATE())   AS TimeDiff from vwtaskmx_comment2 order by menddate desc ");
+            ds = DbHelperSQL.Query("select top 5*,  DATEDIFF(DAY,GETDATE(), menddate)   AS TimeDiff from vwtaskmx_comment2 order by menddate desc");
             DataView dv = ds.Tables[0].DefaultView;
             TaskmxCommentList.DataSource = dv;
             TaskmxCommentList.DataBind();
