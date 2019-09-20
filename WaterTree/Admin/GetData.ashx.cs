@@ -64,6 +64,28 @@ namespace WaterTree.Admin
                 case "SendMessage":
                     SendMessage(context);
                     break;
+                case "GetAllMessageList":
+                    GetAllMessageList(context);
+                    break;
+                case "GetNotReadMessageList":
+                    GetNotReadMessageList(context);
+                    break;
+                case "GetReadMessageList":
+                    GetReadMessageList(context);
+                    break;
+                case "GetMySendMessageList":
+                    GetMySendMessageList(context);
+                    break;
+                case "GetAllSuggestList":
+                    GetAllSuggestList(context);
+                    break;
+                case "GetReplySuggestList":
+                    GetReplySuggestList(context);
+                    break;
+                case "GetNotReplySuggestList":
+                    GetNotReplySuggestList(context);
+                    break;
+        
                 default:
                     break;
                     
@@ -454,6 +476,7 @@ namespace WaterTree.Admin
             string jsonData = JsonConvert.SerializeObject(result);
             context.Response.Write(jsonData);
         }
+        //提交反馈
         public void CommitSuggest(HttpContext context)
         {
             string fileNewName = string.Empty;
@@ -498,7 +521,7 @@ namespace WaterTree.Admin
             userSuggest.commitUserID = int.Parse(UserID);
             userSuggest.title = Title;
             userSuggest.suggest = Suggest;
-            userSuggest.commitDate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+            userSuggest.commitDate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd  HH:mm:ss"));
             userSuggest.files = pathsNew;
             int num = DbHelperSQL.ExecuteSql("insert into sys_UserSuggest(commitUserID,title,suggest,commitDate,files) values('" + userSuggest.commitUserID + "','" + userSuggest.title + "','" + userSuggest.suggest + "','" + userSuggest.commitDate + "','" + userSuggest.files + "')");
             if (num != 0)
@@ -519,7 +542,7 @@ namespace WaterTree.Admin
 
 
      
-
+        //发布消息
         public void SendMessage(HttpContext context)
         {
             var result = new BaseDataPackage<UserMessage>();
@@ -552,7 +575,7 @@ namespace WaterTree.Admin
             UserMessage.SendToList = SendToList;
             UserMessage.MessageType = MessageType;
             UserMessage.bRead = false;
-            UserMessage.SendDateTime = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
+            UserMessage.SendDateTime = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             int num = DbHelperSQL.ExecuteSql("insert into sys_UserMessage (AcceptUserID, AcceptUserName, SendUserID, SendUserName, MsgTitle, MsgText, SendToList, MessageType, bRead, SendDateTime) values('" + AcceptUserID + "', '" + AcceptUserName + "', '" + SendUserID + "', '" + SendUserName+ "', '" +MsgTitle + "' , '" +MsgText + "', '" +SendToList + "', '" +MessageType + "', '" + false + "', '" + UserMessage.SendDateTime + "' )");
             if (num != 0)
             {
@@ -570,7 +593,309 @@ namespace WaterTree.Admin
             context.Response.Write(jsonData);
         }
 
+        //消息列表流加载(全部)
+        public void GetAllMessageList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserMessage");
+            parames[4] = new SqlParameter("@reply", "");
+            parames[3] = new SqlParameter("@bRead", "");
+            parames[1] = new SqlParameter("@AcceptUserName", AcceptUserName);
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr =  DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserMessage> list = new List<UserMessage>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserMessage userMessage = new UserMessage();
+                userMessage.id=int.Parse(dr["id"].ToString());
+                userMessage.MessageType = dr["MessageType"].ToString();
+                userMessage.MsgTitle = dr["MsgTitle"].ToString();
+                userMessage.SendDateTime =DateTime.Parse( dr["SendDateTime"].ToString());
+                userMessage.MsgText = dr["MsgText"].ToString();
+                userMessage.bRead = bool.Parse(dr["bRead"].ToString());
+                if (userMessage.bRead == true)
+                {
+                    userMessage.statusColor = "green";
+                }
+                else
+                {
+                    userMessage.statusColor = "rgba(230,0,18,1)";
+                }
+                list.Add(userMessage);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":"+page+",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
+
+        //消息列表流加载(未读)
+        public void GetNotReadMessageList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserMessage");
+            parames[4] = new SqlParameter("@reply", "");
+            parames[3] = new SqlParameter("@bRead", "false");
+            parames[1] = new SqlParameter("@AcceptUserName", AcceptUserName);
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserMessage> list = new List<UserMessage>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserMessage userMessage = new UserMessage();
+                userMessage.id = int.Parse(dr["id"].ToString());
+                userMessage.MessageType = dr["MessageType"].ToString();
+                userMessage.MsgTitle = dr["MsgTitle"].ToString();
+                userMessage.SendDateTime = DateTime.Parse(dr["SendDateTime"].ToString());
+                userMessage.MsgText = dr["MsgText"].ToString();
+                userMessage.bRead = bool.Parse(dr["bRead"].ToString());
+                if (userMessage.bRead == true)
+                {
+                    userMessage.statusColor = "green";
+                }
+                else
+                {
+                    userMessage.statusColor = "rgba(230,0,18,1)";
+                }
+                list.Add(userMessage);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
+        //消息列表流加载(已读)
+        public void GetReadMessageList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserMessage");
+            parames[4] = new SqlParameter("@reply", "");
+            parames[3] = new SqlParameter("@bRead", "true");
+            parames[1] = new SqlParameter("@AcceptUserName", "刘映红");
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserMessage> list = new List<UserMessage>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserMessage userMessage = new UserMessage();
+                userMessage.id = int.Parse(dr["id"].ToString());
+                userMessage.MessageType = dr["MessageType"].ToString();
+                userMessage.MsgTitle = dr["MsgTitle"].ToString();
+                userMessage.SendDateTime = DateTime.Parse(dr["SendDateTime"].ToString());
+                userMessage.MsgText = dr["MsgText"].ToString();
+                userMessage.bRead = bool.Parse(dr["bRead"].ToString());
+                if (userMessage.bRead == true)
+                {
+                    userMessage.statusColor = "green";
+                }
+                else
+                {
+                    userMessage.statusColor = "rgba(230,0,18,1)";
+                }
+                list.Add(userMessage);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
+        //消息列表流加载(已发送的)
+        public void GetMySendMessageList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserMessage");
+            parames[4] = new SqlParameter("@reply", "");
+            parames[3] = new SqlParameter("@bRead", "");
+            parames[1] = new SqlParameter("@AcceptUserName", "");
+            parames[2] = new SqlParameter("@SendUserName", SendUserName);
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserMessage> list = new List<UserMessage>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserMessage userMessage = new UserMessage();
+                userMessage.id = int.Parse(dr["id"].ToString());
+                userMessage.MessageType = dr["MessageType"].ToString();
+                userMessage.MsgTitle = dr["MsgTitle"].ToString();
+                userMessage.SendDateTime = DateTime.Parse(dr["SendDateTime"].ToString());
+                userMessage.MsgText = dr["MsgText"].ToString();
+                userMessage.bRead= bool.Parse(dr["bRead"].ToString());
+                if(userMessage.bRead == true)
+                {
+                    userMessage.statusColor = "green";
+                }else
+                {
+                    userMessage.statusColor = "rgba(230,0,18,1)";
+                }
+                list.Add(userMessage);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
         
+        //反馈列表流加载(所有)
+        public void GetAllSuggestList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserSuggest");
+            parames[4] = new SqlParameter("@reply", "");
+            parames[3] = new SqlParameter("@bRead", "");
+            parames[1] = new SqlParameter("@AcceptUserName", "");
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserSuggest> list = new List<UserSuggest>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserSuggest userSuggest = new UserSuggest();
+                userSuggest.id = int.Parse(dr["id"].ToString());
+                userSuggest.title = dr["title"].ToString();
+                userSuggest.suggest = dr["suggest"].ToString();
+                userSuggest.files = dr["files"].ToString();
+                userSuggest.commitUserName = dr["commitUserName"].ToString();
+                userSuggest.commitDate = DateTime.Parse(dr["commitDate"].ToString());
+                string reply = dr["reply"].ToString();
+                if (reply != "")
+                {
+                    userSuggest.reply = "已回复";
+                    userSuggest.statusColor = "rgba(240,173,78,1)";
+                }
+                else
+                {
+                    userSuggest.reply = "未回复";
+                    userSuggest.statusColor = "#C7C7CC";
+                }
+                userSuggest.replyUserName = dr["replyUserName"].ToString();
+                string replyDate = dr["replyDate"].ToString();
+                if (replyDate != "")
+                {
+                    userSuggest.replyDate = DateTime.Parse(replyDate);
+                }
+                list.Add(userSuggest);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
+        //反馈列表流加载(已回复)
+        public void GetReplySuggestList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserSuggest");
+            parames[4] = new SqlParameter("@reply", "true");
+            parames[3] = new SqlParameter("@bRead", "");
+            parames[1] = new SqlParameter("@AcceptUserName", "");
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserSuggest> list = new List<UserSuggest>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserSuggest userSuggest = new UserSuggest();
+                userSuggest.id = int.Parse(dr["id"].ToString());
+                userSuggest.title = dr["title"].ToString();
+                userSuggest.suggest = dr["suggest"].ToString();
+                userSuggest.files =dr["files"].ToString();
+                userSuggest.commitUserName =dr["commitUserName"].ToString();
+                userSuggest.commitDate = DateTime.Parse(dr["commitDate"].ToString());
+                string reply = dr["reply"].ToString();
+                if (reply != "")
+                {
+                    userSuggest.reply = "已回复";
+                    userSuggest.statusColor = "rgba(240,173,78,1)";
+                }
+                else
+                {
+                    userSuggest.reply = "未回复";
+                    userSuggest.statusColor = "#C7C7CC";
+                }
+                userSuggest.replyUserName = dr["replyUserName"].ToString();
+                string replyDate = dr["replyDate"].ToString();
+                if (replyDate != "")
+                {
+                    userSuggest.replyDate = DateTime.Parse(replyDate);
+                }
+                list.Add(userSuggest);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
+
+
+        //反馈列表流加载(未回复)
+        public void GetNotReplySuggestList(HttpContext context)
+        {
+            string Page = context.Request["Page"];
+            string AcceptUserName = context.Request["UserName"];
+            string SendUserName = context.Request["UserName"];
+            IDataParameter[] parames = new IDataParameter[6];
+            parames[0] = new SqlParameter("@n", Page);
+            parames[5] = new SqlParameter("@table", "sys_UserSuggest");
+            parames[4] = new SqlParameter("@reply", "false");
+            parames[3] = new SqlParameter("@bRead", "");
+            parames[1] = new SqlParameter("@AcceptUserName", "");
+            parames[2] = new SqlParameter("@SendUserName", "");
+            SqlDataReader dr = DbHelperSQL.RunProcedure("GetPage", parames);
+            List<UserSuggest> list = new List<UserSuggest>(); ;
+            int page = 0;
+            while (dr.Read())
+            {
+                page++;
+                UserSuggest userSuggest = new UserSuggest();
+                userSuggest.id = int.Parse(dr["id"].ToString());
+                userSuggest.title = dr["title"].ToString();
+                userSuggest.suggest = dr["suggest"].ToString();
+                userSuggest.files = dr["files"].ToString();
+                userSuggest.commitUserName = dr["commitUserName"].ToString();
+                userSuggest.commitDate = DateTime.Parse(dr["commitDate"].ToString());
+                string reply = dr["reply"].ToString();
+                if (reply != "")
+                {
+                    userSuggest.reply = "已回复";
+                    userSuggest.statusColor = "rgba(240,173,78,1)";
+                }
+                else
+                {
+                    userSuggest.reply = "未回复";
+                    userSuggest.statusColor = "#C7C7CC";
+                }
+                userSuggest.replyUserName = dr["replyUserName"].ToString();
+                string replyDate = dr["replyDate"].ToString();
+                if (replyDate != "")
+                {
+                    userSuggest.replyDate = DateTime.Parse(replyDate);
+                }
+                list.Add(userSuggest);
+            }
+            string jsonData = JsonConvert.SerializeObject(list);
+            context.Response.Write("{\"code\":" + page + ",\"msg\":\"\",\"count\":1000,\"data\":" + jsonData + "}");
+        }
 
 
         /// <summary>

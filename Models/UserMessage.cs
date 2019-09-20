@@ -8,7 +8,7 @@ namespace Models
 {
     public class UserMessage
     {
-        public UserMessage(int id, string acceptUserID, string acceptUserName, string sendUserID, string sendUserName, string msgTitle, string msgText, string sendToList, string messageType, DateTime sendDateTime, bool bRead)
+        public UserMessage(int id, string acceptUserID, string acceptUserName, string sendUserID, string sendUserName, string msgTitle, string msgText, string sendToList, string messageType, DateTime sendDateTime, bool bRead,string statusColor)
         {
             this.id = id;
             AcceptUserID = acceptUserID;
@@ -21,6 +21,7 @@ namespace Models
             MessageType = messageType;
             SendDateTime = sendDateTime;
             this.bRead = bRead;
+            this.statusColor = statusColor;
         }
         public UserMessage() { }
         public  int id { get; set; }
@@ -34,5 +35,6 @@ namespace Models
         public string MessageType { get; set; }
         public DateTime SendDateTime { get; set; }
         public bool bRead { get; set; }
+        public string statusColor { get; set; }
     }
 }
