@@ -211,6 +211,7 @@
     <Content Include="fonts\mui.ttf" />
     <Content Include="Content\ElementUI\fonts\element-icons.woff" />
     <Content Include="Content\ElementUI\fonts\element-icons.ttf" />
+    <Content Include="DataBase\WaterTree_Chart" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="fonts\iconfont.css" />
     <Content Include="fonts\iconfont.js" />
